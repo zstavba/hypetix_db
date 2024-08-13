@@ -15,9 +15,9 @@ const router = Router();
 
 
 const ER: ExchangeRatesController = new ExchangeRatesController();
-router.post('/commercial/exchange/rates/upload',upload.single('exchange_rates_file'), ER.upload);
-router.get('/commercial/exchange/rates/get',ER.get);
-router.get('/commercial/exchange/rates/get/info/:id', ER.getInformation);
+router.post('/exchange/rates/upload',upload.single('exchange_rates_file'), ER.upload);
+router.get('/exchange/rates/get',ER.get);
+router.get('/exchange/rates/get/info/:id', ER.getInformation);
 
 
 export default router;

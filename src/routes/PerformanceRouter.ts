@@ -14,9 +14,9 @@ const upload = multer({ storage: storage });
 const router = Router();
 
 const Performance: PerformanceController = new PerformanceController();
-router.get('/coders/performance',Performance.get);
-router.get('/coders/performance/info/:id',Performance.getInformation);
-router.post('/coders/performance/upload/file',upload.single('performance_file',),Performance.upload);
+router.get('/performance',Performance.get);
+router.get('/performance/info/:id',Performance.getInformation);
+router.post('/performance/upload/file',upload.single('performance_file',),Performance.upload);
 
 
 export default router;

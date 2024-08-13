@@ -8,7 +8,7 @@ const BC: BankController = new BankController();
 router.get('/country',BC.getCountry);
 router.get('/country/:number',BC.getNUmberCountry);
 router.get('/zipcode',BC.getZipCode);
-router.get('zipcode/:number', BC.getNumberZipCOde);
+router.get('/zipcode/:number', BC.getNumberZipCOde);
 
 
 export default router;

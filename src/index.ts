@@ -45,6 +45,9 @@ import UPNCodesRouter from './routes/UPNCodesRouter';
 // Production API
 import WorkProcedureRouter from './routes/WorkProcedureRouter';
 
+// WorkOrder API
+import WorkOrderRouter from './routes/WorkorderRouter';
+
 const app = express();
 
 
@@ -142,6 +145,14 @@ const ProductionRoutes: Router[] = [
 
 ProductionRoutes.forEach((item: Router) => {
   app.use('/production', item);
+});
+
+const WorkOrderRoutes: Router[] = [
+   WorkOrderRouter
+]
+
+WorkOrderRoutes.forEach((item: Router) => {
+  app.use('/workorder', item);
 });
 
 app.use('/bank', BankRouter);
