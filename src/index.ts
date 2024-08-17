@@ -47,6 +47,7 @@ import WorkProcedureRouter from './routes/WorkProcedureRouter';
 
 // WorkOrder API
 import WorkOrderRouter from './routes/WorkorderRouter';
+import WarehouseSlipRouter from './routes/WarehouseSlipRouter';
 
 const app = express();
 
@@ -139,7 +140,8 @@ DefaultRoutes.forEach((item: Router) => {
 
 
 const ProductionRoutes: Router[] = [
-  WorkProcedureRouter
+  WorkProcedureRouter,
+
 ];
 
 
@@ -148,7 +150,8 @@ ProductionRoutes.forEach((item: Router) => {
 });
 
 const WorkOrderRoutes: Router[] = [
-   WorkOrderRouter
+   WorkOrderRouter,
+   WarehouseSlipRouter
 ]
 
 WorkOrderRoutes.forEach((item: Router) => {

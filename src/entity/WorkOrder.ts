@@ -63,6 +63,16 @@ export class WorkOrder{
     })
     article_description: string; 
 
+    @Column({
+        default: null
+    })
+    production_type: string;
+
+    @Column({
+        default: null
+    })
+    product_type: string; 
+
 
     
 

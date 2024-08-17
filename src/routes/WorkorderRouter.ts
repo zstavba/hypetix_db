@@ -8,5 +8,7 @@ const WorkOrder: WorkOrderController = new WorkOrderController();
 
 router.post('/create',WorkOrder.createWorkorder);
 router.get('/get/list',WorkOrder.getWorkorder);
+router.get('/get/info/:id',WorkOrder.getInformation);
+router.delete('/delete/workorder/:id',WorkOrder.deleteWorkOrder);
 
 export default router; 

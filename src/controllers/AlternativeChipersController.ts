@@ -129,4 +129,55 @@ export class AlternativeChipersController{
     }
 
 
+    insertBasicInformation = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+
+            const filePath = path.join(process.cwd(), 'src', 'assets', 'other_data',"tkanine.csv");
+            const records = await this.FR.readFileAndParse(filePath);
+
+            records.map(async (item: any) => {
+                let AC: AltrernativeChippers = new AltrernativeChippers();
+
+                if (!this.FR.checkIfItemIsValid(item.IDENT)) {
+                    AC.id = null;
+                } else {
+                    // Check if there's already a record with this IDENT
+                    const existingRecord = await AppDataSource.manager.getRepository(AltrernativeChippers)
+                        .findOne({ where: { id: item.IDENT } });
+                    
+                    if (existingRecord) {
+                        console.log(`Duplicate ID found: ${item.IDENT}`);
+                        return;  // Skip this insertion or handle it accordingly
+                    } else {
+                        AC.id = item.IDENT;
+                    }
+                }
+
+                AC.title = (this.FR.checkIfItemIsValid(item.A_NAZIV)) ? null :  this.FR.convertToSlovenian(item.A_NAZIV);
+                AC.active = true; 
+                let getMU = await AppDataSource.manager.getRepository(MeasurmentUnits)
+                                                       .createQueryBuilder("MU")
+                                                       .where({
+                                                        idg: item.FAKTOR
+                                                       })
+                                                       .getOne();
+                AC.fk_mu_id = (this.FR.checkIfObjectIsEmpty(getMU) == null) ? null : getMU;
+               // await AppDataSource.manager.save(AC);
+
+
+
+            });
+
+            return res.status(200).json({
+                message: "Osnovni podatki za Alternativne šifre so bile uspešno ustvarjene !"
+            })
+
+        } catch(error: Error | any) {
+            return res.status(401).json({
+                message : error.message
+            });
+        }
+    }
+
+
 }
