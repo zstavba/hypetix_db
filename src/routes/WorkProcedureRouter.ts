@@ -16,8 +16,9 @@ const router = Router();
 
 
 const WP: WorkProcedureController = new WorkProcedureController();
-router.post('/work/procedures/upload',upload.single('wp_file'),WP.upload);
+router.post('/work/procedures/upload',upload.single('work_procedure_file'),WP.upload);
 router.get('/work/procedures/get',WP.get);
 router.get('/work/procedures/get/info/:id',WP.getInformation);
+router.delete('/work/procedures/delete/:id',WP.deletereWorkProcedure);
 
 export default router; 

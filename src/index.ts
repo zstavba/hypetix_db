@@ -48,6 +48,11 @@ import WorkProcedureRouter from './routes/WorkProcedureRouter';
 // WorkOrder API
 import WorkOrderRouter from './routes/WorkorderRouter';
 import WarehouseSlipRouter from './routes/WarehouseSlipRouter';
+import CharacteristicsRouter from './routes/CharacteristicsRouter';
+import TechnologicalProcessesRouter from './routes/TechnologicalProcessesRouter';
+import ClassificationWorkProceduressRouter from './routes/ClassificationWorkProceduressRouter'; 
+import TechnologicalUnitsRouter from './routes/TechnologicalUnitsRouter';
+import TraitorRouter from './routes/TraitorRouter';
 
 const app = express();
 
@@ -141,7 +146,10 @@ DefaultRoutes.forEach((item: Router) => {
 
 const ProductionRoutes: Router[] = [
   WorkProcedureRouter,
-
+  CharacteristicsRouter,
+  TechnologicalProcessesRouter,
+  ClassificationWorkProceduressRouter,
+  TechnologicalUnitsRouter
 ];
 
 
@@ -151,7 +159,8 @@ ProductionRoutes.forEach((item: Router) => {
 
 const WorkOrderRoutes: Router[] = [
    WorkOrderRouter,
-   WarehouseSlipRouter
+   WarehouseSlipRouter,
+   TraitorRouter
 ]
 
 WorkOrderRoutes.forEach((item: Router) => {

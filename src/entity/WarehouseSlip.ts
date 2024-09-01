@@ -88,5 +88,11 @@ export class WarehouseSlip{
     })
     item_permeability_average: string; 
 
+    @Column({
+        type: "boolean",
+        default: 0
+    })
+    saved: boolean;
+
 
 }

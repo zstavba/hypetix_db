@@ -12,6 +12,9 @@ import { Warehouse } from "../entity/Warehouse";
 import { FileReader } from "../functions/FileReader";
 import { WarehouseSlip } from "../entity/WarehouseSlip";
 import { WorkOrder } from "../entity/WorkOrder";
+import { TraitorItem } from "../entity/TraitorItem";
+import { WarehouseSlipSaved } from "../entity/WarehouseSlipSaved";
+import { Traitor } from "../entity/Traitor";
 
 export class WarehouseSlipController{
 
@@ -118,5 +121,65 @@ export class WarehouseSlipController{
             });
         }
     }
+
+    saveSlipItem = async (req: Request, res: Response, next: NextFunction) => {
+       try {
+            let data = req.body; 
+
+            data.map(async (item: any) => {
+                let findItem = await AppDataSource.manager.getRepository(WarehouseSlip)
+                                                          .createQueryBuilder("WS")
+                                                          .where({
+                                                            id: item.fk_slip_id.id
+                                                          })
+                                                          .getOne();
+                
+                if(this.FR.checkIfObjectIsEmpty(findItem) == null)
+                    throw new Error(`Napaka: Iskan objekt pod IDjem: ${item.id} ni bil najden ali pa ne obstaja !`) 
+                
+                let updateItem = await AppDataSource.manager.getRepository(WarehouseSlip)
+                                                            .createQueryBuilder("WS")
+                                                            .update(WarehouseSlip)
+                                                            .set({
+                                                                saved: true
+                                                            })
+                                                            .where({
+                                                                id: item.fk_slip_id.id
+                                                            })
+                                                            .execute();
+                
+                let saveSlip: WarehouseSlipSaved = new WarehouseSlipSaved();
+                let findTraitor = await AppDataSource.manager.getRepository(Traitor)
+                                                             .createQueryBuilder("T")
+                                                             .where({
+                                                                id: item.fk_traitor_id
+                                                             })
+                                                             .getOne();
+                
+                if(this.FR.checkIfObjectIsEmpty(findTraitor) == null)
+                    throw new Error(`Napaka: Izdajnica pod IDjem: ${item.fk_traitor_id} ni bila najdena !`);
+
+                saveSlip.fk_traitor_id = findTraitor;
+                saveSlip.fk_warehouse_slip_id = (this.FR.checkIfItemIsValid(item.fk_slip_id)) ? null : item.fk_slip_id as WarehouseSlip;
+                saveSlip.saved = true;
+
+                await AppDataSource.manager.save(saveSlip);
+                                                            
+
+
+            });
+
+            return res.status(200).json({
+                message: `Podatki za Izdajnico: ${req.params.id} so bili uspešno shranjeni !`
+            })
+
+       } catch (error: Error | any) {
+        return res.status(401).json({
+            message: error.message
+        });
+       } 
+    }
+
+    
 
 }
