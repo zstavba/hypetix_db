@@ -13,5 +13,5 @@ router.get('/traitor/close/:id',Traitor.closeTraitor);
 router.get('/traitor/open/:id',Traitor.openTraitor);
 router.get('/traitor/items/:id',Traitor.getItemsByID);
 router.post(`/traitor/save/fabric`, Traitor.saveFabricData);
-
+router.get('/traitor/get/saved/fabric', Traitor.getSavedFabric);
 export default router; 

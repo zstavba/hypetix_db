@@ -17,6 +17,7 @@ import { Shipping } from "../entity/Shipping";
 import { MeasurmentUnits } from "../entity/MeasurmentUnits";
 import { TraitorItem } from "../entity/TraitorItem";
 import { AltrernativeChippers } from "../entity/AlternativeChippers";
+import { WarehouseFabricSaved } from "../entity/WarehouseFabricSaved";
 
 export class TraitorController{
 
@@ -35,6 +36,7 @@ export class TraitorController{
                                                   .leftJoinAndSelect("T.fk_work_center_id", "WorkCenterClassification")
                                                   .leftJoinAndSelect("T.fk_traffic_type_id", "TrafficType")
                                                   .leftJoinAndSelect("T.fk_mu_id","MeasurmentUnits")
+                                                  .leftJoinAndSelect("T.fk_alternative_chiper_id","AlternativeChippers1")
                                                   .getMany();
           
             return res.status(200).json(list)
@@ -95,6 +97,7 @@ export class TraitorController{
             T.start_date = (this.FR.checkIfItemIsValid(data.traitor_start_date)) ? null : data.traitor_start_date;
             T.fk_mu_id = (this.FR.checkIfItemIsValid(data.fk_measurement_unit_id)) ? null :  data.fk_measurement_unit_id as MeasurmentUnits;
             T.ammount = (this.FR.checkIfItemIsValid(data.traitor_ammount)) ? null : data.traitor_ammount;
+            T.fk_alternative_chiper_id = (this.FR.checkIfItemIsValid(data.fk_alternative_chiper_id)) ? null: data.fk_alternative_chiper_id as AltrernativeChippers;
             await AppDataSource.manager.save(T);
 
             data.traitor_items.map( async (item: any) => {
@@ -106,8 +109,8 @@ export class TraitorController{
                 TTI.selected_ammount = (this.FR.checkIfItemIsValid(item.selected_ammount)) ? null: item.selected_ammount;
                 TTI.fk_selected_workorder_id = (this.FR.checkIfItemIsValid(item.fk_selected_workorder_id)) ? null : item.fk_selected_workorder_id as WorkOrder;
                 TTI.has_sub_order = (this.FR.checkIfItemIsValid(item.has_sub_order)) ? null : item.has_sub_order;
-               
-                 await AppDataSource.manager.save(TTI);
+
+                await AppDataSource.manager.save(TTI);
             });
 
           
@@ -225,8 +228,34 @@ export class TraitorController{
         try {
 
             let data = req.body; 
+            let findSavedFabric = await AppDataSource.manager.getRepository(WarehouseFabricSaved)
+                                                             .createQueryBuilder("WFS")
+                                                             .leftJoinAndSelect("WFS.fk_traitor_item_id","TraitorItem")
+                                                             .where({
+                                                                fk_traitor_item_id: data.traitor_item.id
+                                                             })
+                                                             .getOne();
+            
+            if(this.FR.checkIfObjectIsEmpty(findSavedFabric) == null) {
+                let saved_fabric: WarehouseFabricSaved = new WarehouseFabricSaved();
+                saved_fabric.fk_traitor_item_id = (this.FR.checkIfItemIsValid(data.traitor_item)) ? null: data.traitor_item as TraitorItem
+                saved_fabric.used_ammount = (this.FR.checkIfItemIsValid(data.used_ammount)) ? null: data.used_ammount;
+                saved_fabric.saved = true; 
+                await AppDataSource.manager.save(saved_fabric);
+            }else{
+                let update = await AppDataSource.manager.getRepository(WarehouseFabricSaved)
+                                                        .createQueryBuilder("WFS")
+                                                        .update(WarehouseFabricSaved)
+                                                        .set({
+                                                            used_ammount: data.used_ammount
+                                                        })
+                                                        .where({
+                                                            fk_traitor_item_id: data.traitor_item.id
+                                                        })
+                                                        .execute();
+            }
 
-            console.log(data);
+
 
             return res.status(200).json({
                 message: `Podatki za Izdajnico: ${req.params.id} so bili uspešno shranjeni !`
@@ -236,6 +265,28 @@ export class TraitorController{
             return res.status(401).json({
                 message: error.message
             });
+        }
+    }
+
+    getSavedFabric = async (req: Request, res: Response, next: NextFunction) => {
+        try  {
+            let list = await AppDataSource.manager.getRepository(WarehouseFabricSaved)
+                                                  .createQueryBuilder("WFS")
+                                                  .leftJoinAndSelect("WFS.fk_traitor_item_id","TraitorItem")
+                                                  .leftJoinAndSelect("TraitorItem.fk_selected_workorder_id","WorkOrder")
+                                                  .leftJoinAndSelect("TraitorItem.fk_alternative_chipper_id","AlternativeChippers")
+                                                  .leftJoinAndSelect("TraitorItem.fk_mu_id","MeasurmentUnits")
+                                                  .getMany();
+
+
+            return res.status(200).json(list);
+
+
+
+        } catch(error: Error | any) {
+            return res.status(401).jsonp({
+                message: error.message
+            })
         }
     }
 

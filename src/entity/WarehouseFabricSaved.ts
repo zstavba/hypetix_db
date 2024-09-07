@@ -11,10 +11,6 @@ export class WarehouseFabricSaved{
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Traitor, {nullable: true})
-    @JoinColumn({ name: "fk_traitor_id" })
-    fk_traitor_id: Traitor;
-
     @ManyToOne(() => TraitorItem, {nullable: true})
     @JoinColumn({ name: "fk_traitor_item_id" })
     fk_traitor_item_id: TraitorItem;

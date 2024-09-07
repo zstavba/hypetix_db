@@ -7,6 +7,7 @@ import { WorkCenterClassification } from "./WorkCenterClassification";
 import { TrafficType } from "./TrafficType";
 import { Shipping } from "./Shipping";
 import { MeasurmentUnits } from "./MeasurmentUnits";
+import { AltrernativeChippers } from "./AlternativeChippers";
 
 @Entity()
 export class Traitor{
@@ -48,6 +49,10 @@ export class Traitor{
     @ManyToOne(() => MeasurmentUnits, {nullable: true})
     @JoinColumn({ name: "fk_mu_id" })
     fk_mu_id: MeasurmentUnits
+
+    @ManyToOne(() => AltrernativeChippers, {nullable: true})
+    @JoinColumn({ name: "fk_alternative_chiper_id" })
+    fk_alternative_chiper_id: AltrernativeChippers
 
     @Column({
         default: null

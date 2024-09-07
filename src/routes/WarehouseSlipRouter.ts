@@ -10,6 +10,8 @@ router.get('/list/slips',Slip.getSlips);
 router.get('/list/slips/by/:id',Slip.getSlipsByID);
 router.delete('/delete/slip/:id',Slip.deleteSlip);
 router.post(`/slip/save/slips`,Slip.saveSlipItem);
+router.get('/slip/get/saved',Slip.checkIfItemsAreSaved);
+router.post('/slip/disabled/saved',Slip.disableSavedItems);
 
 
 

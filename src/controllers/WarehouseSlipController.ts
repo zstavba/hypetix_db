@@ -163,10 +163,7 @@ export class WarehouseSlipController{
                 saveSlip.fk_warehouse_slip_id = (this.FR.checkIfItemIsValid(item.fk_slip_id)) ? null : item.fk_slip_id as WarehouseSlip;
                 saveSlip.saved = true;
 
-                await AppDataSource.manager.save(saveSlip);
-                                                            
-
-
+                await AppDataSource.manager.save(saveSlip);                                                            
             });
 
             return res.status(200).json({
@@ -178,6 +175,81 @@ export class WarehouseSlipController{
             message: error.message
         });
        } 
+    }
+
+    checkIfItemsAreSaved = async (req:Request, res: Response, next: NextFunction) => {
+        try {
+           let getList = await AppDataSource.manager.getRepository(WarehouseSlipSaved)
+                                                    .createQueryBuilder("WSS")
+                                                    .leftJoinAndSelect("WSS.fk_traitor_id","Traitor")
+                                                    .leftJoinAndSelect("WSS.fk_warehouse_slip_id","WarehouseSlip")
+                                                    .getMany();
+            
+            return res.status(200).json(getList);
+
+
+        } catch (error: Error | any) {
+            return res.status(401).json({
+                message: error.message
+            });
+        }
+    }
+
+    disableSavedItems = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            let data = req.body; 
+
+            data.map(async (item: any) => {
+                let findItem = await AppDataSource.manager.getRepository(WarehouseSlip)
+                                                          .createQueryBuilder("WS")
+                                                          .where({
+                                                              id: item.fk_slip_id.id
+                                                           })
+                                                           .getOne();
+
+                if(this.FR.checkIfObjectIsEmpty(findItem) == null)
+                    throw new Error(`Napaka: Iskan objekt pod IDjem: ${item.fk_slip_id.id} ni bil najden ali pa ne obstaja !`) 
+
+                let findTraitor = await AppDataSource.manager.getRepository(Traitor)
+                                                             .createQueryBuilder("T")
+                                                             .where({
+                                                                id: item.fk_traitor_id
+                                                             })
+                                                             .getOne();
+                if(this.FR.checkIfObjectIsEmpty(findTraitor) == null)
+                    throw new Error(`Napaka: Izdajnica pod IDjem: ${item.fk_traitor_id} ni bila najdena !`);
+                    
+                let updateSaved = await AppDataSource.manager.getRepository(WarehouseSlip)
+                                                             .createQueryBuilder("WS")
+                                                             .update(WarehouseSlip)
+                                                             .set({
+                                                                saved: false
+                                                             })
+                                                             .where({
+                                                                id: item.fk_slip_id.id
+                                                             })
+                                                             .execute();
+
+                let deleteSavedItem = await AppDataSource.manager.getRepository(WarehouseSlipSaved)
+                                                                .createQueryBuilder("WSS")
+                                                                .delete()
+                                                                .from(WarehouseSlipSaved)
+                                                                .where({
+                                                                    fk_warehouse_slip_id: item.fk_slip_id.id
+                                                                })
+                                                                .execute();
+
+            }); 
+
+            return res.status(200).json({
+                message: "Podatki za izdajnico so bili uspešno odstranjeni !"
+            })
+
+        } catch(error: Error | any) {
+            return res.status(401).json({
+                message: error.message
+            })
+        }
     }
 
     
