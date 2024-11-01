@@ -55,6 +55,7 @@ import TechnologicalUnitsRouter from './routes/TechnologicalUnitsRouter';
 import TraitorRouter from './routes/TraitorRouter';
 import WorkSheetRouter from './routes/WorkSheetRouter';
 import MaterialSheetRouter from './routes/MaterialSheetRouter'; 
+import BackToProductionRouter from './routes/BackToProductionRouter';
 
 const app = express();
 
@@ -164,7 +165,8 @@ const WorkOrderRoutes: Router[] = [
    WarehouseSlipRouter,
    TraitorRouter,
    WorkSheetRouter,
-   MaterialSheetRouter
+   MaterialSheetRouter,
+   BackToProductionRouter
 ]
 
 WorkOrderRoutes.forEach((item: Router) => {
